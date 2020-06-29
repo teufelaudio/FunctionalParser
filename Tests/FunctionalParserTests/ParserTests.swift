@@ -1,7 +1,7 @@
 @testable import FunctionalParser
 import XCTest
 
-final class SubtitleParserTests: XCTestCase {
+final class ParserTests: XCTestCase {
     func testParserLiteral() throws {
         let string = "1"
         let result = Parser.literal("1").run(string)
@@ -36,15 +36,6 @@ final class SubtitleParserTests: XCTestCase {
         let rest = result.rest
         XCTAssertNotNil(match)
         XCTAssertEqual("1", String(rest))
-    }
-
-    func testParserLiteralZip() throws {
-        let string = "12345"
-        let result = Parser.zip(.literal("12"), .literal("34")).run(string)
-        let match: (Void, Void)? = result.match
-        let rest = result.rest
-        XCTAssertNotNil(match)
-        XCTAssertEqual("5", String(rest))
     }
 
     func testParserOneOrMoreSpaces() throws {
@@ -127,26 +118,6 @@ final class SubtitleParserTests: XCTestCase {
         let rest = result.rest
         XCTAssertNotNil(match)
         XCTAssertTrue(rest.isEmpty)
-    }
-
-    func testOneOf() throws {
-        let string1 = "1ab"
-        let string2 = "2ab"
-        let string3 = "3ab"
-
-        let sut = Parser.oneOf([.literal("1"), .literal("2")])
-
-        let result1 = sut.run(string1)
-        let result2 = sut.run(string2)
-        let result3 = sut.run(string3)
-
-        XCTAssertNotNil(result1.match)
-        XCTAssertNotNil(result2.match)
-        XCTAssertNil(result3.match)
-
-        XCTAssertEqual("ab", String(result1.rest))
-        XCTAssertEqual("ab", String(result2.rest))
-        XCTAssertEqual("3ab", String(result3.rest))
     }
 
     func testLineBreak() throws {
