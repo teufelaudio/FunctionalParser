@@ -14,3 +14,23 @@ extension Parser {
         }
     }
 }
+
+extension Parser {
+    public func replaceMismatch(with alternative: A) -> Parser {
+        Parser { str in
+            if let originalMatch = self.run(&str) {
+                return originalMatch
+            }
+            return alternative
+        }
+    }
+
+    public func catchMismatch(_ alternative: @escaping () -> Parser) -> Parser {
+        Parser { str in
+            if let originalMatch = self.run(&str) {
+                return originalMatch
+            }
+            return alternative().run(&str)
+        }
+    }
+}

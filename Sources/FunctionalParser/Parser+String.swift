@@ -55,16 +55,32 @@ extension Parser where A == Character {
 }
 
 extension Parser where A == Void {
-    public static let zeroOrMoreSpaces = Parser<Substring>.prefix(while: { $0.isWhitespace && !$0.isNewline }).map { _ in () }
+    public static let zeroOrMoreSpaces = Parser<Substring>
+        .prefix(while: { $0.isWhitespace && !$0.isNewline })
+        .catchMismatch { .always("") }
+        .map { _ in }
 
     public static let oneOrMoreSpaces = Parser<Substring>
-        .prefix(while: {
-            $0.isWhitespace && !$0.isNewline
-        }).flatMap { $0.isEmpty ? .never : .always(()) }
+        .prefix(while: { $0.isWhitespace && !$0.isNewline })
+        .map { _ in }
 
-    public static let zeroOrMoreSpacesOrLines = Parser<Substring>.prefix(while: { $0.isWhitespace }).map { _ in () }
+    public static let zeroOrMoreSpacesOrLines = Parser<Substring>
+        .prefix(while: { $0.isWhitespace })
+        .catchMismatch { .always("") }
+        .map { _ in }
 
-    public static let oneOrMoreLineBreaks = Parser<Substring>.prefix(while: { $0.isNewline }).flatMap { $0.isEmpty ? .never : .always(()) }
+    public static let oneOrMoreSpacesOrLines = Parser<Substring>
+        .prefix(while: { $0.isWhitespace })
+        .map { _ in }
+
+    public static let zeroOrMoreLineBreaks = Parser<Substring>
+        .prefix(while: { $0.isNewline })
+        .catchMismatch { .always("") }
+        .map { _ in }
+
+    public static let oneOrMoreLineBreaks = Parser<Substring>
+        .prefix(while: { $0.isNewline })
+        .map { _ in }
 }
 
 extension Parser where A == Void {
@@ -75,7 +91,7 @@ extension Parser where A == Substring {
     public static func prefix(while condition: @escaping (Character) -> Bool) -> Parser<Substring> {
         Parser { str in
             let prefix = str.prefix(while: condition)
-            guard !prefix.isEmpty else { return prefix }
+            guard !prefix.isEmpty else { return nil }
 
             let newStart = str.index(str.startIndex, offsetBy: prefix.count)
             str = str[newStart ..< str.endIndex]

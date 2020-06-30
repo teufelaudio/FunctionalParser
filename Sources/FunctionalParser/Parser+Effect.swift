@@ -2,7 +2,7 @@ import Foundation
 
 extension Parser {
     public static func parserWithEffect(
-        _ a: @escaping () -> Parser<A>,
+        _ a: @escaping () -> Parser,
         onSuccess: @escaping (A) -> Void,
         onFailure: @escaping () -> Void = { }
     ) -> Parser {
